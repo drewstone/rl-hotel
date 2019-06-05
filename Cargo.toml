@@ -1,0 +1,16 @@
+[package]
+name = "rl-hotel"
+version = "0.1.0"
+authors = ["drewstone <drewstone329@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ndarray = { version = "0.12.1" }
+arrayvec = "0.4.10"
+rstat = "0.2"
+rsrl = "0.6"
+spaces = "4.7"
+num-traits = "0.2"
+rand = "0.6"
