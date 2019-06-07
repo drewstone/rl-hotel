@@ -9,6 +9,9 @@ edition = "2018"
 [dependencies]
 ndarray = { version = "0.12.1" }
 arrayvec = "0.4.10"
+gnuplot = "0.0.31"
+geo = "0.12.2"
+voronoi = "0.1.4"
 rstat = "0.2"
 rsrl = "0.6"
 spaces = "4.7"
