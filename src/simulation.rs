@@ -6,7 +6,6 @@ use rsrl::geometry::{
 	continuous::Interval,
 };
 use voronoi::{voronoi, Point, make_polygons};
-use crate::plotter::plot_points;
 
 #[derive(Debug, Clone)]
 pub struct Simulation {
@@ -44,31 +43,46 @@ impl Simulation {
 		}
 	}
 
-	pub fn step(&mut self) -> Result<(), SynthesisError> {
+	pub fn step(&mut self) -> Result<Matrix<f64>, SynthesisError> {
 		// Get positions of all agents
-		let positions: Matrix<f64> = Self::get_matrix(self.agents.clone().into_iter()
+		let positions: Matrix<f64> = Self::get_matrix(self.agents.clone()
+			.into_iter()
 			.map(|agent| agent.position.to_vec())
 			.collect());
-		plot_points(positions.clone());
 		// Get new moves of all agents
-		let _moves: Matrix<f64> = Self::get_matrix(self.agents.clone().into_iter()
+		let actions: Matrix<f64> = Self::get_matrix(self.agents.clone()
+			.into_iter()
 			.map(|agent|
 				agent.make_move(&positions, &self.action_space).unwrap().to_vec()
 			).collect());
-		// Create point representation of moves
+		println!("{:?}", positions);
+		// Create point representation of actions
 		let points: Vec<Point> = {
-			self.agents.clone().into_iter().map(|agent| { match self.dim {
-				Dimensions::OneD => Point::new(agent.position[0], 0.0),
-				Dimensions::TwoD => Point::new(agent.position[0], agent.position[1]),
-			}}).collect()
+			let mut res = vec![];
+			for i in 0..actions.column(0).len() {
+				let pt = match self.dim {
+					Dimensions::OneD => {
+						let val = actions.row(i)[0];
+						Point::new(val, 0.0)
+					},
+					Dimensions::TwoD => {
+						let val = actions.row(i);
+						Point::new(val[0], val[1])
+					},
+				};
+
+				res.push(pt);
+			}
+
+			res
 		};
 		// Find voronoi cells for each point
 		let voronoi_diagram = voronoi(points, 1.0);
-		let _vor_polys = make_polygons(&voronoi_diagram);
-		println!("{:?}", _vor_polys);
+		let vor_polys = make_polygons(&voronoi_diagram);
+		println!("Vornonoi polygons\n{:?}", vor_polys);
 		// Increment round
 		self.round += 1;
-		Ok(())
+		Ok(actions)
 	}
 
 	pub fn get_matrix(vec_of_vecs: Vec<Vec<f64>>) -> Matrix<f64> {
@@ -98,7 +112,7 @@ mod test {
 	#[test]
 	fn step_simulation() {
 		let mut sim = Simulation::new(10, Dimensions::OneD, HotellingAgentType::Random);
-		let result = sim.step();
-		assert_eq!(result, Ok(()));
+		let result = sim.step().unwrap();
+		assert_eq!(result.column(0).len(), 10);
 	}
 }

@@ -11,13 +11,15 @@ mod plotter;
 use simulation::Simulation;
 use hotelling_agent::HotellingAgentType;
 use simulation::Dimensions;
+use plotter::plot_points;
 
 fn main() {
 	let mut sim = Simulation::new(10, Dimensions::TwoD, HotellingAgentType::Random);
 	for _i in 0..1 {
-		println!("{:?}", sim.round);
 		match sim.step() {
-			Ok(_) => {},
+			Ok(pos) => {
+				plot_points(pos);
+			},
 			Err(err) => panic!("{:?}", err),
 		}
 	}

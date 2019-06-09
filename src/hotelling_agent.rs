@@ -64,8 +64,6 @@ impl HotellingAgent {
 	}
 
 	pub fn make_move(mut self, _agent_states: &Matrix, _action_space: &LinearSpace<Interval>) -> Result<Vector, SynthesisError> {
-		let new_position = Vector::from_vec(vec![]);
-		self.position = new_position;
 		Ok(self.position)
 	}
 
